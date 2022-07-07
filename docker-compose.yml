@@ -7,15 +7,18 @@ services:
     image: registry:2
     ports:
       - 5000:5000
+    secrets:
+    - wsl.crt.file
+    - wsl.key.file
     environment:
       - REGISTRY_LOG_LEVEL=info
-      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/registry
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
       - REGISTRY_HTTP_ADDR=0.0.0.0:5000
-      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/wsl.crt
-      - REGISTRY_HTTP_TLS_KEY=/certs/wsl.key
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/run/secrets/wsl.crt.file
+      - REGISTRY_HTTP_TLS_KEY=/run/secrets/wsl.key.file
       - REGISTRY_STORAGE_DELETE_ENABLED=true
     volumes:
-      - /opt/docker-registry/certs:/certs
+      - /opt/docker-registry/config.yml:/etc/docker/registry/config.yml
       - /opt/docker-registry:/var/lib/registry
     extra_hosts:
       - "docker:192.168.37.2"
@@ -46,3 +49,8 @@ services:
 networks:
   registry-network:
     driver: bridge
+secrets:
+  wsl.crt.file:
+    file: /opt/docker-registry/certs/wsl.crt
+  wsl.key.file:
+    file: /opt/docker-registry/certs/wsl.key
