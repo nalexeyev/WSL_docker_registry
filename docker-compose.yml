@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     image: registry:2
     ports:
-      - 5000:5000
+      - 443:5000
     secrets:
     - wsl.crt.file
     - wsl.key.file
@@ -19,11 +19,10 @@ services:
       - REGISTRY_STORAGE_DELETE_ENABLED=true
     volumes:
       - /opt/docker-registry/config.yml:/etc/docker/registry/config.yml
-      - /opt/docker-registry:/var/lib/registry
+      - /opt/docker-registry/registry:/var/lib/registry
     extra_hosts:
       - "docker:192.168.37.2"
       - "wsl:192.168.37.2"
-    #network_mode: host
     networks:
       - registry-network
   registry-ui:
@@ -35,7 +34,7 @@ services:
     ports:
       - 8081:80
     environment:
-      - REGISTRY_HOST=wsl
+      - REGISTRY_HOST=docker-registry
       - REGISTRY_PORT=5000
       - REGISTRY_PROTOCOL=https
       - SSL_VERIFY=false
@@ -43,7 +42,6 @@ services:
       - REGISTRY_ALLOW_DELETE=true
     extra_hosts:
       - "wsl:192.168.37.2"
-    #network_mode: host
     networks:
       - registry-network
 networks:
